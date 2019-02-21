@@ -67,6 +67,7 @@ discord.command(:joinclass,
   roles = []
   class_id_array.each do |class_id|
     return 'Invalid class id' unless class_channel_names.include? class_id
+    
     roles.push(server.roles.find { |r| r.name == "class-#{class_id}" })
   end
   event.user.modify_roles(roles, [], nil)
@@ -82,7 +83,8 @@ discord.command(:dropclass,
   roles = []
   class_id_array.each do |class_id|
     return 'Invalid class id' unless class_channel_names.include? class_id
-      roles.push(server.roles.find { |r| r.name == "class-#{class_id}" })
+
+    roles.push(server.roles.find { |r| r.name == "class-#{class_id}" })
   end
   event.user.modify_roles([], roles, nil)
   return 'done'
