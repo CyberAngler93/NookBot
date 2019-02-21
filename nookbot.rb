@@ -61,8 +61,9 @@ end
 discord.command(:joinclass,
                 description: 'Adds you to a class chat',
                 usage: 'joinclass cs123') do |event, *class_id_array|
+  class_category_id = config['class_category_id']
   class_channel_names = server.channels
-                              .select { |c| c.parent_id == CLASS_CATEGORY_ID }
+                              .select { |c| c.parent_id == class_category_id }
                               .map(&:name)
   roles = []
   class_id_array.each do |class_id|
@@ -77,8 +78,9 @@ end
 discord.command(:dropclass,
                 description: 'Removes you from a class chat',
                 usage: 'dropclass cs123') do |event, *class_id_array|
+  class_category_id = config['class_category_id']
   class_channel_names = server.channels
-                              .select { |c| c.parent_id == CLASS_CATEGORY_ID }
+                              .select { |c| c.parent_id == class_category_id }
                               .map(&:name)
   roles = []
   class_id_array.each do |class_id|
