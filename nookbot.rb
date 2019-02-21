@@ -58,35 +58,42 @@ discord.command(:destroyclass,
   return 'Channel deleted'
 end
 
-discord.command(:joinclass,
-                description: 'Adds you to a class chat',
-                usage: 'joinclass cs123') do |event, class_id_raw|
-  class_id = class_id_raw.downcase.chomp
-  class_category_id = config['class_category_id']
+discord.command(:joinclass, 
+                description: 'Adds you to a class chat', 
+                usage: 'joinclass cs123') do |event,*class_id_array|
   class_channel_names = server.channels
-                              .select { |c| c.parent_id == class_category_id }
-                              .map(&:name)
-  return 'Invalid class id' unless class_channel_names.include? class_id
-
-  role = server.roles.select { |r| r.name == "class-#{class_id}" }
-  event.user.modify_roles(role, [], nil)
-  return 'Done'
+                              .select { |c| c.parent_id == CLASS_CATEGORY_ID }
+                              .map {|c| c.name}
+  roles = []
+  class_id_array.each do |class_id|
+    if class_channel_names.include? class_id
+      roles.push(server.roles.find { |r| r.name == "class-#{class_id}" })
+    else
+      return 'Class name not found try again'
+    end
+  end
+  event.user.modify_roles(roles, [], nil)
+  return 'done'
 end
 
 discord.command(:dropclass,
-                description: 'Removes you from a class chat',
-                usage: 'dropclass cs123') do |event, class_id_raw|
-  class_id = class_id_raw.downcase.chomp
-  class_category_id = config['class_category_id']
+                description: 'Removes you from a class chat', 
+                usage: 'dropclass cs123') do |event, *class_id_array|
   class_channel_names = server.channels
-                              .select { |c| c.parent_id == class_category_id }
-                              .map(&:name)
-  return 'Invalid class id' unless class_channel_names.include? class_id
-
-  role = server.roles.select { |r| r.name == "class-#{class_id}" }
-  event.user.modify_roles([], role, nil)
-  'Done'
+                              .select { |c| c.parent_id == CLASS_CATEGORY_ID }
+                              .map {|c| c.name}
+  roles = []
+  class_id_array.each do |class_id|
+    if class_channel_names.include? class_id
+      roles.push(server.roles.find { |r| r.name == "class-#{ class_id }" })
+    else
+      return 'Invalid class id'
+    end
+  end
+  event.user.modify_roles([], roles, nil)
+  return 'done'
 end
+
 
 discord.command(:classes, description: 'Lists classes', usage: 'classes') do
   message = "Currently available class channels:\n"
