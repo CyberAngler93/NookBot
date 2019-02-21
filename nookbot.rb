@@ -20,7 +20,13 @@ discord.command(:createclass,
                 description: 'Creates a new class chat',
                 usage: 'createclass cs123') do |event, class_id_raw|
   if admin_or_teacher? event.user
+    class_category_id = config['class_category_id']
+    class_channel_names = server.channels
+                                .select { |c| c.parent_id == class_category_id }
+                                .map(&:name)
     class_id = class_id_raw.downcase.chomp
+    return 'duplicate class' if class_channel_names.include? class_id
+
     class_role = server.create_role name: "class-#{class_id}"
     everyone_role = server.roles.find { |r| r.name == '@everyone' }
 
